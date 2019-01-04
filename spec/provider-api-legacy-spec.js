@@ -11,12 +11,12 @@ describe('Provider API Legacy', () => {
     jasmine.snapshotDeprecations()
 
     // Set to live completion
-    atom.config.set('autocomplete-plus.enableAutoActivation', true)
+    atom.config.set('autocomplete-plus-tmp.enableAutoActivation', true)
     atom.config.set('editor.fontSize', '16')
 
     // Set the completion delay
     completionDelay = 100
-    atom.config.set('autocomplete-plus.autoActivationDelay', completionDelay)
+    atom.config.set('autocomplete-plus-tmp.autoActivationDelay', completionDelay)
     completionDelay += 100 // Rendering
 
     let workspaceElement = atom.views.getView(atom.workspace)
@@ -28,7 +28,7 @@ describe('Provider API Legacy', () => {
         atom.workspace.open('sample.js').then(e => {
           editor = e
         }),
-        atom.packages.activatePackage('autocomplete-plus').then(a => {
+        atom.packages.activatePackage('autocomplete-plus-tmp').then(a => {
           mainModule = a.mainModule
         })
       ]))

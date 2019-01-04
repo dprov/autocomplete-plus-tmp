@@ -24,12 +24,12 @@ describe('SubsequenceProvider', () => {
 
   beforeEach(() => {
     // Set to live completion
-    atom.config.set('autocomplete-plus.enableAutoActivation', true)
-    atom.config.set('autocomplete-plus.defaultProvider', 'Subsequence')
+    atom.config.set('autocomplete-plus-tmp.enableAutoActivation', true)
+    atom.config.set('autocomplete-plus-tmp.defaultProvider', 'Subsequence')
 
     // Set the completion delay
     completionDelay = 100
-    atom.config.set('autocomplete-plus.autoActivationDelay', completionDelay)
+    atom.config.set('autocomplete-plus-tmp.autoActivationDelay', completionDelay)
     completionDelay += 100 // Rendering delaya\
 
     let workspaceElement = atom.views.getView(atom.workspace)
@@ -39,7 +39,7 @@ describe('SubsequenceProvider', () => {
       Promise.all([
         atom.workspace.open('sample.js').then((e) => { editor = e }),
         atom.packages.activatePackage('language-javascript'),
-        atom.packages.activatePackage('autocomplete-plus').then((a) => {
+        atom.packages.activatePackage('autocomplete-plus-tmp').then((a) => {
           mainModule = a.mainModule
         })
       ]))
@@ -110,7 +110,7 @@ describe('SubsequenceProvider', () => {
 
   it('does not return the prefix as a suggestion', () => {
     atom.config.set('editor.nonWordCharacters', '-')
-    atom.config.set('autocomplete-plus.extraWordCharacters', '-')
+    atom.config.set('autocomplete-plus-tmp.extraWordCharacters', '-')
 
     editor.moveToBottom()
     editor.insertText('--qu')
@@ -170,8 +170,8 @@ describe('SubsequenceProvider', () => {
     })
   })
 
-  describe('when autocomplete-plus.minimumWordLength is > 1', () => {
-    beforeEach(() => atom.config.set('autocomplete-plus.minimumWordLength', 3))
+  describe('when autocomplete-plus-tmp.minimumWordLength is > 1', () => {
+    beforeEach(() => atom.config.set('autocomplete-plus-tmp.minimumWordLength', 3))
 
     it('only returns results when the prefix is at least the min word length', () => {
       editor.insertText('function aNewFunction(){};')
@@ -194,8 +194,8 @@ describe('SubsequenceProvider', () => {
     })
   })
 
-  describe('when autocomplete-plus.minimumWordLength is 0', () => {
-    beforeEach(() => atom.config.set('autocomplete-plus.minimumWordLength', 0))
+  describe('when autocomplete-plus-tmp.minimumWordLength is 0', () => {
+    beforeEach(() => atom.config.set('autocomplete-plus-tmp.minimumWordLength', 0))
 
     it('only returns results when the prefix is at least the min word length', () => {
       editor.insertText('function aNewFunction(){};')
@@ -254,7 +254,7 @@ describe('SubsequenceProvider', () => {
     )
 
   describe('when editor.nonWordCharacters changes', () => {
-    it('includes characters that are included in the `autocomplete-plus.extraWordCharacters` setting or not excluded in the `editor.nonWordCharacters` setting', () => {
+    it('includes characters that are included in the `autocomplete-plus-tmp.extraWordCharacters` setting or not excluded in the `editor.nonWordCharacters` setting', () => {
       waitsForPromise(async () => {
         const scopeSelector = editor.getLastCursor().getScopeDescriptor().getScopeChain()
         editor.insertText('good$noodles good-beef ')
@@ -264,7 +264,7 @@ describe('SubsequenceProvider', () => {
         expect(sugs).not.toContain('good$noodles')
         expect(sugs).not.toContain('good-beef')
 
-        atom.config.set('autocomplete-plus.extraWordCharacters', '-', {scopeSelector})
+        atom.config.set('autocomplete-plus-tmp.extraWordCharacters', '-', {scopeSelector})
         sugs = await suggestionsForPrefix(provider, editor, 'good')
         expect(sugs).toContain('good-beef')
         expect(sugs).not.toContain('good$noodles')
@@ -279,7 +279,7 @@ describe('SubsequenceProvider', () => {
 
   describe('when includeCompletionsFromAllBuffers is enabled', () => {
     beforeEach(() => {
-      atom.config.set('autocomplete-plus.includeCompletionsFromAllBuffers', true)
+      atom.config.set('autocomplete-plus-tmp.includeCompletionsFromAllBuffers', true)
 
       waitsForPromise(() =>
           Promise.all([
@@ -290,7 +290,7 @@ describe('SubsequenceProvider', () => {
       runs(() => advanceClock(1))
     })
 
-    afterEach(() => atom.config.set('autocomplete-plus.includeCompletionsFromAllBuffers', false))
+    afterEach(() => atom.config.set('autocomplete-plus-tmp.includeCompletionsFromAllBuffers', false))
 
     it('outputs unique suggestions', () => {
       editor.setCursorBufferPosition([7, 0])
@@ -463,7 +463,7 @@ describe('SubsequenceProvider', () => {
   })
 
   it('adds words to the wordlist with unicode characters', () => {
-    atom.config.set('autocomplete-plus.enableExtendedUnicodeSupport', true)
+    atom.config.set('autocomplete-plus-tmp.enableExtendedUnicodeSupport', true)
     waitsForPromise(() =>
         suggestionsForPrefix(provider, editor, 'somē', {raw: true}).then(suggestions => {
           expect(suggestions).toHaveLength(0)

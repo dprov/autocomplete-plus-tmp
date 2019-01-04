@@ -9,12 +9,12 @@ describe('Autocomplete Manager', () => {
   beforeEach(() =>
     runs(() => {
       // Set to live completion
-      atom.config.set('autocomplete-plus.enableAutoActivation', true)
+      atom.config.set('autocomplete-plus-tmp.enableAutoActivation', true)
       atom.config.set('editor.fontSize', '16')
 
       // Set the completion delay
       completionDelay = 100
-      atom.config.set('autocomplete-plus.autoActivationDelay', completionDelay)
+      atom.config.set('autocomplete-plus-tmp.autoActivationDelay', completionDelay)
       completionDelay += 100 // Rendering
 
       let workspaceElement = atom.views.getView(atom.workspace)
@@ -24,7 +24,7 @@ describe('Autocomplete Manager', () => {
 
   describe('Undo a completion', () => {
     beforeEach(() => {
-      runs(() => atom.config.set('autocomplete-plus.enableAutoActivation', true))
+      runs(() => atom.config.set('autocomplete-plus-tmp.enableAutoActivation', true))
 
       waitsForPromise(() => atom.workspace.open('sample.js').then((e) => {
         editor = e
@@ -33,7 +33,7 @@ describe('Autocomplete Manager', () => {
       waitsForPromise(() => atom.packages.activatePackage('language-javascript'))
 
       // Activate the package
-      waitsForPromise(() => atom.packages.activatePackage('autocomplete-plus').then((a) => {
+      waitsForPromise(() => atom.packages.activatePackage('autocomplete-plus-tmp').then((a) => {
         mainModule = a.mainModule
       }))
 
@@ -61,7 +61,7 @@ describe('Autocomplete Manager', () => {
       runs(() => {
         // Accept suggestion
         editorView = atom.views.getView(editor)
-        atom.commands.dispatch(editorView, 'autocomplete-plus:confirm')
+        atom.commands.dispatch(editorView, 'autocomplete-plus-tmp:confirm')
 
         expect(editor.getBuffer().getLastLine()).toEqual('function')
 

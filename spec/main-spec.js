@@ -9,12 +9,12 @@ describe('Autocomplete', () => {
   beforeEach(() => {
     runs(() => {
       // Set to live completion
-      atom.config.set('autocomplete-plus.enableAutoActivation', true)
-      atom.config.set('autocomplete-plus.fileBlacklist', ['.*', '*.md'])
+      atom.config.set('autocomplete-plus-tmp.enableAutoActivation', true)
+      atom.config.set('autocomplete-plus-tmp.fileBlacklist', ['.*', '*.md'])
 
       // Set the completion delay
       completionDelay = 100
-      atom.config.set('autocomplete-plus.autoActivationDelay', completionDelay)
+      atom.config.set('autocomplete-plus-tmp.autoActivationDelay', completionDelay)
       completionDelay += 100 // Rendering delay
 
       let workspaceElement = atom.views.getView(atom.workspace)
@@ -31,7 +31,7 @@ describe('Autocomplete', () => {
 
     // Activate the package
     waitsForPromise(() => {
-      return atom.packages.activatePackage('autocomplete-plus').then((a) => {
+      return atom.packages.activatePackage('autocomplete-plus-tmp').then((a) => {
         mainModule = a.mainModule
       })
     })
@@ -57,7 +57,7 @@ describe('Autocomplete', () => {
     it('activates autocomplete and initializes AutocompleteManager', () =>
       runs(() => {
         expect(autocompleteManager).toBeDefined()
-        expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+        expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
       })
     )
   )
@@ -72,11 +72,11 @@ describe('Autocomplete', () => {
         waitForAutocomplete()
 
         runs(async () => {
-          expect(editorView.querySelector('.autocomplete-plus')).toExist()
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
 
           // Deactivate the package
-          await atom.packages.deactivatePackage('autocomplete-plus')
-          expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+          await atom.packages.deactivatePackage('autocomplete-plus-tmp')
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
         })
       })
     )

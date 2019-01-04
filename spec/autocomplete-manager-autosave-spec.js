@@ -32,12 +32,12 @@ describe('Autocomplete Manager', () => {
       atom.config.set('autosave.enabled', true)
 
       // Set to live completion
-      atom.config.set('autocomplete-plus.enableAutoActivation', true)
+      atom.config.set('autocomplete-plus-tmp.enableAutoActivation', true)
       atom.config.set('editor.fontSize', '16')
 
       // Set the completion delay
       completionDelay = 100
-      atom.config.set('autocomplete-plus.autoActivationDelay', completionDelay)
+      atom.config.set('autocomplete-plus-tmp.autoActivationDelay', completionDelay)
       completionDelay += 100 // Rendering
 
       let workspaceElement = atom.views.getView(atom.workspace)
@@ -54,7 +54,7 @@ describe('Autocomplete Manager', () => {
     waitsForPromise(() => atom.packages.activatePackage('language-javascript'))
 
     // Activate the package
-    waitsForPromise(() => atom.packages.activatePackage('autocomplete-plus').then((a) => {
+    waitsForPromise(() => atom.packages.activatePackage('autocomplete-plus-tmp').then((a) => {
       mainModule = a.mainModule
     }))
 
@@ -83,7 +83,7 @@ describe('Autocomplete Manager', () => {
   describe('autosave compatibility', () =>
     it('keeps the suggestion list open while saving', () => {
       runs(() => {
-        expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+        expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
         // Trigger an autocompletion
         editor.moveToBottom()
         editor.moveToBeginningOfLine()
@@ -96,7 +96,7 @@ describe('Autocomplete Manager', () => {
       runs(() => {
         editor.save()
         didAutocomplete = false
-        expect(editorView.querySelector('.autocomplete-plus')).toExist()
+        expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
         editor.insertText('u')
         advanceClock(completionDelay)
       })
@@ -106,10 +106,10 @@ describe('Autocomplete Manager', () => {
       runs(() => {
         editor.save()
         didAutocomplete = false
-        expect(editorView.querySelector('.autocomplete-plus')).toExist()
+        expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
         // Accept suggestion
         let suggestionListView = autocompleteManager.suggestionList.suggestionListElement
-        atom.commands.dispatch(suggestionListView.element, 'autocomplete-plus:confirm')
+        atom.commands.dispatch(suggestionListView.element, 'autocomplete-plus-tmp:confirm')
         expect(editor.getBuffer().getLastLine()).toEqual('function')
       })
     })

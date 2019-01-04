@@ -8,12 +8,12 @@ describe('Async providers', () => {
   beforeEach(() => {
     runs(() => {
       // Set to live completion
-      atom.config.set('autocomplete-plus.enableAutoActivation', true)
+      atom.config.set('autocomplete-plus-tmp.enableAutoActivation', true)
       atom.config.set('editor.fontSize', '16')
 
       // Set the completion delay
       completionDelay = 100
-      atom.config.set('autocomplete-plus.autoActivationDelay', completionDelay)
+      atom.config.set('autocomplete-plus-tmp.autoActivationDelay', completionDelay)
       completionDelay += 100 // Rendering
 
       let workspaceElement = atom.views.getView(atom.workspace)
@@ -27,7 +27,7 @@ describe('Async providers', () => {
     waitsForPromise(() => atom.packages.activatePackage('language-javascript'))
 
     // Activate the package
-    waitsForPromise(() => atom.packages.activatePackage('autocomplete-plus').then((a) => {
+    waitsForPromise(() => atom.packages.activatePackage('autocomplete-plus-tmp').then((a) => {
       mainModule = a.mainModule
     }))
 
@@ -112,7 +112,7 @@ describe('Async providers', () => {
         waitForAutocomplete()
 
         // Expect nothing because the provider has not come back yet
-        expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+        expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
 
         // Wait til the longass provider comes back
         advanceClock(1000)
@@ -120,7 +120,7 @@ describe('Async providers', () => {
 
       waits(0)
 
-      runs(() => expect(editorView.querySelector('.autocomplete-plus')).not.toExist())
+      runs(() => expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist())
     })
   })
 })

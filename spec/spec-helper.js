@@ -5,10 +5,10 @@ let completionDelay = 100
 beforeEach(() => {
   spyOn(atom.views, 'readDocument').andCallFake(fn => fn())
   spyOn(atom.views, 'updateDocument').andCallFake(fn => fn())
-  atom.config.set('autocomplete-plus.minimumWordLength', 1)
-  atom.config.set('autocomplete-plus.suggestionListFollows', 'Word')
-  atom.config.set('autocomplete-plus.useCoreMovementCommands', true)
-  atom.config.set('autocomplete-plus.includeCompletionsFromAllBuffers', false)
+  atom.config.set('autocomplete-plus-tmp.minimumWordLength', 1)
+  atom.config.set('autocomplete-plus-tmp.suggestionListFollows', 'Word')
+  atom.config.set('autocomplete-plus-tmp.useCoreMovementCommands', true)
+  atom.config.set('autocomplete-plus-tmp.includeCompletionsFromAllBuffers', false)
 })
 
 let triggerAutocompletion = (editor, moveCursor = true, char = 'f') => {
@@ -35,17 +35,17 @@ let waitForAutocomplete = () => {
 
 let waitForDeferredSuggestions = (editorView, totalSuggestions) => {
   waitsFor(() => {
-    return editorView.querySelector('.autocomplete-plus autocomplete-suggestion-list .suggestion-list-scroller')
+    return editorView.querySelector('.autocomplete-plus-tmp autocomplete-suggestion-list .suggestion-list-scroller')
   })
 
   runs(() => {
-    const scroller = editorView.querySelector('.autocomplete-plus autocomplete-suggestion-list .suggestion-list-scroller')
+    const scroller = editorView.querySelector('.autocomplete-plus-tmp autocomplete-suggestion-list .suggestion-list-scroller')
     scroller.scrollTo(0, 100)
     scroller.scrollTo(0, 0)
   })
 
   waitsFor(() => {
-    return editorView.querySelectorAll('.autocomplete-plus li').length === totalSuggestions
+    return editorView.querySelectorAll('.autocomplete-plus-tmp li').length === totalSuggestions
   })
 }
 

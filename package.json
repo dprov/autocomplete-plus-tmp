@@ -1,9 +1,9 @@
 {
-  "name": "autocomplete-plus",
+  "name": "autocomplete-plus-tmp",
   "version": "2.42.0",
   "main": "./lib/main",
   "description": "Display possible completions in the editor while typing",
-  "repository": "https://github.com/atom/autocomplete-plus",
+  "repository": "https://github.com/atom/autocomplete-plus-tmp",
   "license": "MIT",
   "engines": {
     "atom": ">=0.189.0 <2.0.0"
@@ -52,7 +52,7 @@
   "configSchema": {
     "enableAutoActivation": {
       "title": "Show Suggestions On Keystroke",
-      "description": "Suggestions will show as you type if this preference is enabled. If it is disabled, you can still see suggestions by using the keymapping for 'autocomplete-plus:activate' (shown below).",
+      "description": "Suggestions will show as you type if this preference is enabled. If it is disabled, you can still see suggestions by using the keymapping for 'autocomplete-plus-tmp:activate' (shown below).",
       "type": "boolean",
       "default": true,
       "order": 1
@@ -88,7 +88,7 @@
     },
     "useCoreMovementCommands": {
       "title": "Use Core Movement Commands",
-      "description": "Disable this if you want to bind your own keystrokes to move around the suggestion list. You will also need to add definitions to your keymap. See: https://github.com/atom/autocomplete-plus#remapping-movement-commands",
+      "description": "Disable this if you want to bind your own keystrokes to move around the suggestion list. You will also need to add definitions to your keymap. See: https://github.com/atom/autocomplete-plus-tmp#remapping-movement-commands",
       "type": "boolean",
       "default": true,
       "order": 5
@@ -164,7 +164,7 @@
     },
     "enableAutoConfirmSingleSuggestion": {
       "title": "Automatically Confirm Single Suggestion",
-      "description": "If enabled, automatically insert suggestion on manual activation with 'autocomplete-plus:activate' when there is only one match.",
+      "description": "If enabled, automatically insert suggestion on manual activation with 'autocomplete-plus-tmp:activate' when there is only one match.",
       "type": "boolean",
       "default": true,
       "order": 14
@@ -254,5 +254,10 @@
     "ignore": [
       "**/spec/fixtures/**"
     ]
+  },
+  "apmInstallSource": {
+    "type": "git",
+    "source": "https://github.com/dprov/autocomplete-plus-tmp",
+    "sha": "f73c465591e416c79bff98120f65bef1765ccb7f"
   }
 }

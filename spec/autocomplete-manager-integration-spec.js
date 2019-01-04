@@ -34,19 +34,19 @@ describe('Autocomplete Manager', () => {
     gutterWidth = null
     runs(() => {
       // Set to live completion
-      atom.config.set('autocomplete-plus.enableAutoActivation', true)
+      atom.config.set('autocomplete-plus-tmp.enableAutoActivation', true)
       atom.config.set('editor.fontSize', '16')
 
       // Set the completion delay
       completionDelay = 100
-      atom.config.set('autocomplete-plus.autoActivationDelay', completionDelay)
+      atom.config.set('autocomplete-plus-tmp.autoActivationDelay', completionDelay)
       completionDelay += 100 // Rendering
 
       workspaceElement = atom.views.getView(atom.workspace)
       jasmine.attachToDOM(workspaceElement)
 
-      atom.config.set('autocomplete-plus.maxVisibleSuggestions', 10)
-      atom.config.set('autocomplete-plus.consumeSuffix', true)
+      atom.config.set('autocomplete-plus-tmp.maxVisibleSuggestions', 10)
+      atom.config.set('autocomplete-plus-tmp.consumeSuffix', true)
     })
   })
 
@@ -60,7 +60,7 @@ describe('Autocomplete Manager', () => {
             editor = e
             editorView = atom.views.getView(editor)
           }),
-          atom.packages.activatePackage('autocomplete-plus').then((a) => {
+          atom.packages.activatePackage('autocomplete-plus-tmp').then((a) => {
             mainModule = a.mainModule
           })
         ]))
@@ -88,8 +88,8 @@ describe('Autocomplete Manager', () => {
 
       runs(() => {
         let suggestion, triggerPosition
-        let suggestionListView = editorView.querySelector('.autocomplete-plus autocomplete-suggestion-list')
-        atom.commands.dispatch(suggestionListView, 'autocomplete-plus:confirm')
+        let suggestionListView = editorView.querySelector('.autocomplete-plus-tmp autocomplete-suggestion-list')
+        atom.commands.dispatch(suggestionListView, 'autocomplete-plus-tmp:confirm')
 
         expect(provider.onDidInsertSuggestion).toHaveBeenCalled();
 
@@ -102,31 +102,31 @@ describe('Autocomplete Manager', () => {
 
     it('closes the suggestion list when saving', () => {
       let directory = temp.mkdirSync()
-      expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+      expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
 
       editor.insertText('a')
       waitForAutocomplete()
 
       waitsFor((done) => {
         editor.getBuffer().onDidSave(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
           done()
         })
 
-        expect(editorView.querySelector('.autocomplete-plus')).toExist()
+        expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
         editor.saveAs(path.join(directory, 'spec', 'tmp', 'issue-11.js'))
       })
     })
 
     it('does not show suggestions after a word has been confirmed', () => {
-      expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+      expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
       for (let i = 0; i < 'red'.length; i++) { let c = 'red'[i]; editor.insertText(c) }
       waitForAutocomplete()
 
       runs(() => {
-        expect(editorView.querySelector('.autocomplete-plus')).toExist()
-        atom.commands.dispatch(editorView, 'autocomplete-plus:confirm')
-        expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+        expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
+        atom.commands.dispatch(editorView, 'autocomplete-plus-tmp:confirm')
+        expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
       })
     })
 
@@ -139,30 +139,30 @@ describe('Autocomplete Manager', () => {
 
       waitForAutocomplete()
 
-      runs(() => expect(editorView.querySelector('.autocomplete-plus')).toExist())
+      runs(() => expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist())
     })
 
     it('closes the suggestion list when entering an empty string (e.g. carriage return)', () => {
-      expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+      expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
       editor.insertText('a')
       waitForAutocomplete()
 
       runs(() => {
-        expect(editorView.querySelector('.autocomplete-plus')).toExist()
+        expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
         editor.insertText('\r')
-        expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+        expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
       })
     })
 
     it('it refocuses the editor after pressing enter', () => {
-      expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+      expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
       editor.insertText('a')
       waitForAutocomplete()
 
       runs(() => {
-        expect(editorView.querySelector('.autocomplete-plus')).toExist()
+        expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
         editor.insertText('\n')
-        expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+        expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
         expect(editorView).toHaveFocus()
       })
     })
@@ -170,7 +170,7 @@ describe('Autocomplete Manager', () => {
     it('it hides the suggestion list when the user keeps typing', () => {
       spyOn(provider, 'getSuggestions').andCallFake(({prefix}) => ['acd', 'ade'].filter((t) => t.startsWith(prefix)).map((t) => ({text: t})))
 
-      expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+      expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
 
       // Trigger an autocompletion
       editor.moveToBottom()
@@ -178,21 +178,21 @@ describe('Autocomplete Manager', () => {
       waitForAutocomplete()
 
       runs(() => {
-        expect(editorView.querySelector('.autocomplete-plus')).toExist()
+        expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
 
         editor.insertText('b')
         waitForAutocomplete()
       })
 
-      runs(() => expect(editorView.querySelector('.autocomplete-plus')).not.toExist())
+      runs(() => expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist())
     })
 
     it('does not show the suggestion list when pasting', () => {
-      expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+      expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
       editor.insertText('red')
       waitForAutocomplete()
 
-      runs(() => expect(editorView.querySelector('.autocomplete-plus')).not.toExist())
+      runs(() => expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist())
     })
 
     it('only shows for the editor that currently has focus', () => {
@@ -201,10 +201,10 @@ describe('Autocomplete Manager', () => {
       editorView.focus()
 
       expect(editorView).toHaveFocus()
-      expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+      expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
 
       expect(editorView2).not.toHaveFocus()
-      expect(editorView2.querySelector('.autocomplete-plus')).not.toExist()
+      expect(editorView2.querySelector('.autocomplete-plus-tmp')).not.toExist()
 
       editor.insertText('r')
 
@@ -217,16 +217,16 @@ describe('Autocomplete Manager', () => {
         expect(editorView).toHaveFocus()
         expect(editorView2).not.toHaveFocus()
 
-        expect(editorView.querySelector('.autocomplete-plus')).toExist()
-        expect(editorView2.querySelector('.autocomplete-plus')).not.toExist()
+        expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
+        expect(editorView2.querySelector('.autocomplete-plus-tmp')).not.toExist()
 
-        atom.commands.dispatch(editorView, 'autocomplete-plus:confirm')
+        atom.commands.dispatch(editorView, 'autocomplete-plus-tmp:confirm')
 
         expect(editorView).toHaveFocus()
         expect(editorView2).not.toHaveFocus()
 
-        expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
-        expect(editorView2.querySelector('.autocomplete-plus')).not.toExist()
+        expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
+        expect(editorView2.querySelector('.autocomplete-plus-tmp')).not.toExist()
       })
     })
 
@@ -236,26 +236,26 @@ describe('Autocomplete Manager', () => {
         return (list.map((text) => ({text})))
       })
 
-      expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+      expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
       editor.insertText('a')
       waitForAutocomplete()
 
       runs(() => {
-        expect(editorView.querySelector('.autocomplete-plus')).toExist()
-        expect(editorView.querySelectorAll('.autocomplete-plus li')).toHaveLength(2)
+        expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
+        expect(editorView.querySelectorAll('.autocomplete-plus-tmp li')).toHaveLength(2)
       })
     })
 
     describe('when the fileBlacklist option is set', () => {
       beforeEach(() => {
-        atom.config.set('autocomplete-plus.fileBlacklist', ['.*', '*.md'])
+        atom.config.set('autocomplete-plus-tmp.fileBlacklist', ['.*', '*.md'])
         editor.getBuffer().setPath('blacklisted.md')
       })
 
       it('does not show suggestions when working with files that match the blacklist', () => {
         editor.insertText('a')
         waitForAutocomplete()
-        runs(() => expect(editorView.querySelector('.autocomplete-plus')).not.toExist())
+        runs(() => expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist())
       })
 
       it('caches the blacklist result', () => {
@@ -275,7 +275,7 @@ describe('Autocomplete Manager', () => {
         })
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
           expect(path.basename.callCount).toBe(1)
         })
       })
@@ -285,8 +285,8 @@ describe('Autocomplete Manager', () => {
         waitForAutocomplete()
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
-          atom.commands.dispatch(editorView, 'autocomplete-plus:cancel')
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
+          atom.commands.dispatch(editorView, 'autocomplete-plus-tmp:cancel')
 
           editor.getBuffer().setPath('not-blackslisted.txt')
           editor.insertText('a')
@@ -294,15 +294,15 @@ describe('Autocomplete Manager', () => {
         })
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).toExist()
-          atom.commands.dispatch(editorView, 'autocomplete-plus:cancel')
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
+          atom.commands.dispatch(editorView, 'autocomplete-plus-tmp:cancel')
 
           editor.getBuffer().setPath('blackslisted.md')
           editor.insertText('a')
           waitForAutocomplete()
         })
 
-        runs(() => expect(editorView.querySelector('.autocomplete-plus')).not.toExist())
+        runs(() => expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist())
       })
     })
 
@@ -328,13 +328,13 @@ describe('Autocomplete Manager', () => {
           return (list.map((text) => ({text})))
         })
 
-        expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+        expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
         editor.insertText('a')
         waitForAutocomplete()
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).toExist()
-          expect(editorView.querySelectorAll('.autocomplete-plus li')).toHaveLength(2)
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
+          expect(editorView.querySelectorAll('.autocomplete-plus-tmp li')).toHaveLength(2)
         })
       })
     })
@@ -343,13 +343,13 @@ describe('Autocomplete Manager', () => {
       it('does not display empty suggestions', () => {
         spyOn(provider, 'getSuggestions').andCallFake(() => [{text: 'ab', type: 'local function'}, {text: 'abc', type: ' another ~ function   '}])
 
-        expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+        expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
         editor.insertText('a')
         waitForAutocomplete()
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).toExist()
-          let items = editorView.querySelectorAll('.autocomplete-plus li')
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
+          let items = editorView.querySelectorAll('.autocomplete-plus-tmp li')
           expect(items).toHaveLength(2)
           expect(items[0].querySelector('.icon').className).toBe('icon local function')
           expect(items[1].querySelector('.icon').className).toBe('icon another ~ function')
@@ -361,13 +361,13 @@ describe('Autocomplete Manager', () => {
       it('does not display empty suggestions', () => {
         spyOn(provider, 'getSuggestions').andCallFake(() => [{text: 'ab', className: 'local function'}, {text: 'abc', className: ' another  ~ function   '}])
 
-        expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+        expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
         editor.insertText('a')
         waitForAutocomplete()
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).toExist()
-          let items = editorView.querySelectorAll('.autocomplete-plus li')
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
+          let items = editorView.querySelectorAll('.autocomplete-plus-tmp li')
           expect(items[0].className).toBe('selected local function')
           expect(items[1].className).toBe('another ~ function')
         })
@@ -386,9 +386,9 @@ describe('Autocomplete Manager', () => {
 
         runs(() => {
           ({ autocompleteManager } = mainModule)
-          expect(editorView.querySelector('.autocomplete-plus')).toExist()
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
 
-          atom.commands.dispatch(editorView, 'autocomplete-plus:confirm')
+          atom.commands.dispatch(editorView, 'autocomplete-plus-tmp:confirm')
 
           expect(editor.lineTextForBufferRow(0)).toBe('shift:extra:shift')
           expect(editor.getCursorBufferPosition()).toEqual([0, 17])
@@ -420,20 +420,20 @@ describe('Autocomplete Manager', () => {
         runs(() => {
           ({ autocompleteManager } = mainModule)
           editorView = atom.views.getView(editor)
-          atom.commands.dispatch(editorView, 'autocomplete-plus:confirm')
+          atom.commands.dispatch(editorView, 'autocomplete-plus-tmp:confirm')
 
           expect(editor.lineTextForBufferRow(0)).toBe('sh:extra:ah')
           expect(editor.getSelections().length).toEqual(2)
           expect(editor.getSelections()[0].getBufferRange()).toEqual([[0, 2], [0, 2]])
           expect(editor.getSelections()[1].getBufferRange()).toEqual([[0, 11], [0, 11]])
 
-          expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
         })
       })
     })
 
     describe('suppression for editorView classes', () => {
-      beforeEach(() => atom.config.set('autocomplete-plus.suppressActivationForEditorClasses', ['vim-mode.command-mode', 'vim-mode . visual-mode', ' vim-mode.operator-pending-mode ', ' ']))
+      beforeEach(() => atom.config.set('autocomplete-plus-tmp.suppressActivationForEditorClasses', ['vim-mode.command-mode', 'vim-mode . visual-mode', ' vim-mode.operator-pending-mode ', ' ']))
 
       it('should show the suggestion list when the suppression list does not match', () => {
         runs(() => {
@@ -442,11 +442,11 @@ describe('Autocomplete Manager', () => {
         })
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
           triggerAutocompletion(editor)
         })
 
-        runs(() => expect(editorView.querySelector('.autocomplete-plus')).toExist())
+        runs(() => expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist())
       })
 
       it('should not show the suggestion list when the suppression list does match', () => {
@@ -456,11 +456,11 @@ describe('Autocomplete Manager', () => {
         })
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
           triggerAutocompletion(editor)
         })
 
-        runs(() => expect(editorView.querySelector('.autocomplete-plus')).not.toExist())
+        runs(() => expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist())
       })
 
       it('should not show the suggestion list when the suppression list does match', () => {
@@ -470,11 +470,11 @@ describe('Autocomplete Manager', () => {
         })
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
           triggerAutocompletion(editor)
         })
 
-        runs(() => expect(editorView.querySelector('.autocomplete-plus')).not.toExist())
+        runs(() => expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist())
       })
 
       it('should not show the suggestion list when the suppression list does match', () => {
@@ -484,11 +484,11 @@ describe('Autocomplete Manager', () => {
         })
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
           triggerAutocompletion(editor)
         })
 
-        runs(() => expect(editorView.querySelector('.autocomplete-plus')).not.toExist())
+        runs(() => expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist())
       })
 
       it('should show the suggestion list when the suppression list does not match', () => {
@@ -498,22 +498,22 @@ describe('Autocomplete Manager', () => {
         })
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
           triggerAutocompletion(editor)
         })
 
-        runs(() => expect(editorView.querySelector('.autocomplete-plus')).toExist())
+        runs(() => expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist())
       })
 
       it('should show the suggestion list when the suppression list does not match', () => {
         runs(() => editorView.classList.add('command-mode'))
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
           triggerAutocompletion(editor)
         })
 
-        runs(() => expect(editorView.querySelector('.autocomplete-plus')).toExist())
+        runs(() => expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist())
       })
     })
 
@@ -640,7 +640,7 @@ describe('Autocomplete Manager', () => {
         buffer.setTextInRange([[0, 0], [0, 0]], 's')
         waitForAutocomplete()
 
-        runs(() => expect(editorView.querySelector('.autocomplete-plus')).not.toExist())
+        runs(() => expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist())
       })
 
       it('does not hide the suggestion list', () => {
@@ -653,18 +653,18 @@ describe('Autocomplete Manager', () => {
         waitForAutocomplete()
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).toExist()
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
           editor.setTextInBufferRange([[0, 0], [0, 0]], '*')
-          expect(editorView.querySelector('.autocomplete-plus')).toExist()
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
           editor.setTextInBufferRange([[0, 0], [0, 0]], '\n')
-          expect(editorView.querySelector('.autocomplete-plus')).toExist()
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
         })
       })
     })
 
     describe('when number of suggestions > maxVisibleSuggestions', () => {
       beforeEach(() => {
-        atom.config.set('autocomplete-plus.maxVisibleSuggestions', 2)
+        atom.config.set('autocomplete-plus-tmp.maxVisibleSuggestions', 2)
       })
 
       describe('when a suggestion description is not specified', () => {
@@ -674,102 +674,102 @@ describe('Autocomplete Manager', () => {
         })
 
         it('scrolls the list always showing the selected item', () => {
-          expect(editorView.querySelector('.autocomplete-plus')).toExist()
-          let itemHeight = parseInt(getComputedStyle(editorView.querySelector('.autocomplete-plus li')).height)
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
+          let itemHeight = parseInt(getComputedStyle(editorView.querySelector('.autocomplete-plus-tmp li')).height)
 
-          let suggestionList = editorView.querySelector('.autocomplete-plus autocomplete-suggestion-list')
+          let suggestionList = editorView.querySelector('.autocomplete-plus-tmp autocomplete-suggestion-list')
           let scroller = suggestionList.querySelector('.suggestion-list-scroller')
 
           expect(scroller.scrollTop).toBe(0)
           atom.commands.dispatch(suggestionList, 'core:move-down')
-          expect(editorView.querySelectorAll('.autocomplete-plus li')[1]).toHaveClass('selected')
+          expect(editorView.querySelectorAll('.autocomplete-plus-tmp li')[1]).toHaveClass('selected')
           expect(scroller.scrollTop).toBe(0)
 
           atom.commands.dispatch(suggestionList, 'core:move-down')
-          expect(editorView.querySelectorAll('.autocomplete-plus li')[2]).toHaveClass('selected')
+          expect(editorView.querySelectorAll('.autocomplete-plus-tmp li')[2]).toHaveClass('selected')
           expect(scroller.scrollTop).toBe(itemHeight)
 
           atom.commands.dispatch(suggestionList, 'core:move-down')
-          expect(editorView.querySelectorAll('.autocomplete-plus li')[3]).toHaveClass('selected')
+          expect(editorView.querySelectorAll('.autocomplete-plus-tmp li')[3]).toHaveClass('selected')
           expect(scroller.scrollTop).toBe(itemHeight * 2)
 
           atom.commands.dispatch(suggestionList, 'core:move-down')
-          expect(editorView.querySelectorAll('.autocomplete-plus li')[0]).toHaveClass('selected')
+          expect(editorView.querySelectorAll('.autocomplete-plus-tmp li')[0]).toHaveClass('selected')
           expect(scroller.scrollTop).toBe(0)
 
           atom.commands.dispatch(suggestionList, 'core:move-up')
-          expect(editorView.querySelectorAll('.autocomplete-plus li')[3]).toHaveClass('selected')
+          expect(editorView.querySelectorAll('.autocomplete-plus-tmp li')[3]).toHaveClass('selected')
           expect(scroller.scrollTop).toBe(itemHeight * 2)
 
           atom.commands.dispatch(suggestionList, 'core:move-up')
-          expect(editorView.querySelectorAll('.autocomplete-plus li')[2]).toHaveClass('selected')
+          expect(editorView.querySelectorAll('.autocomplete-plus-tmp li')[2]).toHaveClass('selected')
           expect(scroller.scrollTop).toBe(itemHeight * 2)
 
           atom.commands.dispatch(suggestionList, 'core:move-up')
-          expect(editorView.querySelectorAll('.autocomplete-plus li')[1]).toHaveClass('selected')
+          expect(editorView.querySelectorAll('.autocomplete-plus-tmp li')[1]).toHaveClass('selected')
           expect(scroller.scrollTop).toBe(itemHeight)
 
           atom.commands.dispatch(suggestionList, 'core:move-up')
-          expect(editorView.querySelectorAll('.autocomplete-plus li')[0]).toHaveClass('selected')
+          expect(editorView.querySelectorAll('.autocomplete-plus-tmp li')[0]).toHaveClass('selected')
           expect(scroller.scrollTop).toBe(0)
         })
 
         it('pages up and down when core:page-up and core:page-down are used', () => {
-          let itemHeight = parseInt(getComputedStyle(editorView.querySelector('.autocomplete-plus li')).height)
-          let suggestionList = editorView.querySelector('.autocomplete-plus autocomplete-suggestion-list')
+          let itemHeight = parseInt(getComputedStyle(editorView.querySelector('.autocomplete-plus-tmp li')).height)
+          let suggestionList = editorView.querySelector('.autocomplete-plus-tmp autocomplete-suggestion-list')
           let scroller = suggestionList.querySelector('.suggestion-list-scroller')
           expect(scroller.scrollTop).toBe(0)
 
           atom.commands.dispatch(suggestionList, 'core:page-down')
-          expect(editorView.querySelectorAll('.autocomplete-plus li')[2]).toHaveClass('selected')
+          expect(editorView.querySelectorAll('.autocomplete-plus-tmp li')[2]).toHaveClass('selected')
 
           atom.commands.dispatch(suggestionList, 'core:page-down')
-          expect(editorView.querySelectorAll('.autocomplete-plus li')[3]).toHaveClass('selected')
+          expect(editorView.querySelectorAll('.autocomplete-plus-tmp li')[3]).toHaveClass('selected')
 
           atom.commands.dispatch(suggestionList, 'core:page-down')
-          expect(editorView.querySelectorAll('.autocomplete-plus li')[3]).toHaveClass('selected')
+          expect(editorView.querySelectorAll('.autocomplete-plus-tmp li')[3]).toHaveClass('selected')
           expect(scroller.scrollTop).toBe(itemHeight * 2)
 
           atom.commands.dispatch(suggestionList, 'core:page-up')
-          expect(editorView.querySelectorAll('.autocomplete-plus li')[1]).toHaveClass('selected')
+          expect(editorView.querySelectorAll('.autocomplete-plus-tmp li')[1]).toHaveClass('selected')
 
           atom.commands.dispatch(suggestionList, 'core:page-up')
-          expect(editorView.querySelectorAll('.autocomplete-plus li')[0]).toHaveClass('selected')
+          expect(editorView.querySelectorAll('.autocomplete-plus-tmp li')[0]).toHaveClass('selected')
 
           atom.commands.dispatch(suggestionList, 'core:page-up')
-          expect(editorView.querySelectorAll('.autocomplete-plus li')[0]).toHaveClass('selected')
+          expect(editorView.querySelectorAll('.autocomplete-plus-tmp li')[0]).toHaveClass('selected')
           expect(scroller.scrollTop).toBe(0)
         })
 
         it('moves to the top and bottom when core:move-to-top and core:move-to-bottom are used', () => {
-          let itemHeight = parseInt(getComputedStyle(editorView.querySelector('.autocomplete-plus li')).height)
-          let suggestionList = editorView.querySelector('.autocomplete-plus autocomplete-suggestion-list')
+          let itemHeight = parseInt(getComputedStyle(editorView.querySelector('.autocomplete-plus-tmp li')).height)
+          let suggestionList = editorView.querySelector('.autocomplete-plus-tmp autocomplete-suggestion-list')
           let scroller = suggestionList.querySelector('.suggestion-list-scroller')
           expect(scroller.scrollTop).toBe(0)
 
           atom.commands.dispatch(suggestionList, 'core:move-to-bottom')
-          expect(editorView.querySelectorAll('.autocomplete-plus li')[3]).toHaveClass('selected')
+          expect(editorView.querySelectorAll('.autocomplete-plus-tmp li')[3]).toHaveClass('selected')
           expect(scroller.scrollTop).toBe(itemHeight * 2)
 
           atom.commands.dispatch(suggestionList, 'core:move-to-bottom')
-          expect(editorView.querySelectorAll('.autocomplete-plus li')[3]).toHaveClass('selected')
+          expect(editorView.querySelectorAll('.autocomplete-plus-tmp li')[3]).toHaveClass('selected')
           expect(scroller.scrollTop).toBe(itemHeight * 2)
 
           atom.commands.dispatch(suggestionList, 'core:move-to-top')
-          expect(editorView.querySelectorAll('.autocomplete-plus li')[0]).toHaveClass('selected')
+          expect(editorView.querySelectorAll('.autocomplete-plus-tmp li')[0]).toHaveClass('selected')
           expect(scroller.scrollTop).toBe(0)
 
           atom.commands.dispatch(suggestionList, 'core:move-to-top')
-          expect(editorView.querySelectorAll('.autocomplete-plus li')[0]).toHaveClass('selected')
+          expect(editorView.querySelectorAll('.autocomplete-plus-tmp li')[0]).toHaveClass('selected')
           expect(scroller.scrollTop).toBe(0)
         })
 
         it('only shows the maxVisibleSuggestions in the suggestion popup', () => {
-          expect(editorView.querySelector('.autocomplete-plus')).toExist()
-          let itemHeight = parseInt(getComputedStyle(editorView.querySelector('.autocomplete-plus li')).height)
-          expect(editorView.querySelectorAll('.autocomplete-plus li')).toHaveLength(4)
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
+          let itemHeight = parseInt(getComputedStyle(editorView.querySelector('.autocomplete-plus-tmp li')).height)
+          expect(editorView.querySelectorAll('.autocomplete-plus-tmp li')).toHaveLength(4)
 
-          let suggestionList = editorView.querySelector('.autocomplete-plus autocomplete-suggestion-list')
+          let suggestionList = editorView.querySelector('.autocomplete-plus-tmp autocomplete-suggestion-list')
           expect(suggestionList.offsetHeight).toBe(2 * itemHeight)
           expect(suggestionList.querySelector('.suggestion-list-scroller').style['max-height']).toBe(`${2 * itemHeight}px`)
         })
@@ -787,12 +787,12 @@ describe('Autocomplete Manager', () => {
           waitForDeferredSuggestions(editorView, 4)
 
           runs(() => {
-            expect(editorView.querySelector('.autocomplete-plus')).toExist()
-            let itemHeight = parseInt(getComputedStyle(editorView.querySelector('.autocomplete-plus li')).height)
-            expect(editorView.querySelectorAll('.autocomplete-plus li')).toHaveLength(4)
+            expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
+            let itemHeight = parseInt(getComputedStyle(editorView.querySelector('.autocomplete-plus-tmp li')).height)
+            expect(editorView.querySelectorAll('.autocomplete-plus-tmp li')).toHaveLength(4)
 
-            let suggestionList = editorView.querySelector('.autocomplete-plus autocomplete-suggestion-list')
-            let descriptionHeight = parseInt(getComputedStyle(editorView.querySelector('.autocomplete-plus .suggestion-description')).height)
+            let suggestionList = editorView.querySelector('.autocomplete-plus-tmp autocomplete-suggestion-list')
+            let descriptionHeight = parseInt(getComputedStyle(editorView.querySelector('.autocomplete-plus-tmp .suggestion-description')).height)
             expect(suggestionList.offsetHeight).toBe((2 * itemHeight) + descriptionHeight)
             expect(suggestionList.querySelector('.suggestion-list-scroller').style['max-height']).toBe(`${2 * itemHeight}px`)
           })
@@ -814,10 +814,10 @@ describe('Autocomplete Manager', () => {
           waitForDeferredSuggestions(editorView, 4)
 
           runs(() => {
-            let suggestionList = editorView.querySelector('.autocomplete-plus autocomplete-suggestion-list')
+            let suggestionList = editorView.querySelector('.autocomplete-plus-tmp autocomplete-suggestion-list')
             expect(suggestionList).toExist()
 
-            expect(editorView.querySelector('.autocomplete-plus .suggestion-description strong').textContent).toEqual('mmmmmmmmmmmmmmmmmmmmmmmmmm')
+            expect(editorView.querySelector('.autocomplete-plus-tmp .suggestion-description strong').textContent).toEqual('mmmmmmmmmmmmmmmmmmmmmmmmmm')
 
             editor.insertText('b')
             editor.insertText('c')
@@ -825,10 +825,10 @@ describe('Autocomplete Manager', () => {
           })
 
           runs(() => {
-            let suggestionList = editorView.querySelector('.autocomplete-plus autocomplete-suggestion-list')
+            let suggestionList = editorView.querySelector('.autocomplete-plus-tmp autocomplete-suggestion-list')
             expect(suggestionList).toExist()
 
-            expect(editorView.querySelector('.autocomplete-plus .suggestion-description strong').textContent).toEqual('mmmmmmmmmmmmmmmmmmmmmm')
+            expect(editorView.querySelector('.autocomplete-plus-tmp .suggestion-description strong').textContent).toEqual('mmmmmmmmmmmmmmmmmmmmmm')
           })
         })
 
@@ -849,7 +849,7 @@ describe('Autocomplete Manager', () => {
           waitForDeferredSuggestions(editorView, 4)
 
           runs(() => {
-            let suggestionList = editorView.querySelector('.autocomplete-plus autocomplete-suggestion-list')
+            let suggestionList = editorView.querySelector('.autocomplete-plus-tmp autocomplete-suggestion-list')
             expect(suggestionList).toExist()
 
             listWidth = parseInt(suggestionList.style.width)
@@ -861,7 +861,7 @@ describe('Autocomplete Manager', () => {
           })
 
           runs(() => {
-            let suggestionList = editorView.querySelector('.autocomplete-plus autocomplete-suggestion-list')
+            let suggestionList = editorView.querySelector('.autocomplete-plus-tmp autocomplete-suggestion-list')
             expect(suggestionList).toExist()
 
             let newWidth = parseInt(suggestionList.style.width)
@@ -879,28 +879,28 @@ describe('Autocomplete Manager', () => {
         triggerAutocompletion(editor, true, 'a')
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).toExist()
-          suggestionList = editorView.querySelector('.autocomplete-plus autocomplete-suggestion-list')
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
+          suggestionList = editorView.querySelector('.autocomplete-plus-tmp autocomplete-suggestion-list')
         })
       })
 
       it('binds to custom commands when unset, and binds back to core commands when set', () => {
         atom.commands.dispatch(suggestionList, 'core:move-down')
-        expect(editorView.querySelectorAll('.autocomplete-plus li')[1]).toHaveClass('selected')
+        expect(editorView.querySelectorAll('.autocomplete-plus-tmp li')[1]).toHaveClass('selected')
 
-        atom.config.set('autocomplete-plus.useCoreMovementCommands', false)
+        atom.config.set('autocomplete-plus-tmp.useCoreMovementCommands', false)
 
         atom.commands.dispatch(suggestionList, 'core:move-down')
-        expect(editorView.querySelectorAll('.autocomplete-plus li')[1]).toHaveClass('selected')
-        atom.commands.dispatch(suggestionList, 'autocomplete-plus:move-down')
-        expect(editorView.querySelectorAll('.autocomplete-plus li')[2]).toHaveClass('selected')
+        expect(editorView.querySelectorAll('.autocomplete-plus-tmp li')[1]).toHaveClass('selected')
+        atom.commands.dispatch(suggestionList, 'autocomplete-plus-tmp:move-down')
+        expect(editorView.querySelectorAll('.autocomplete-plus-tmp li')[2]).toHaveClass('selected')
 
-        atom.config.set('autocomplete-plus.useCoreMovementCommands', true)
+        atom.config.set('autocomplete-plus-tmp.useCoreMovementCommands', true)
 
-        atom.commands.dispatch(suggestionList, 'autocomplete-plus:move-down')
-        expect(editorView.querySelectorAll('.autocomplete-plus li')[2]).toHaveClass('selected')
+        atom.commands.dispatch(suggestionList, 'autocomplete-plus-tmp:move-down')
+        expect(editorView.querySelectorAll('.autocomplete-plus-tmp li')[2]).toHaveClass('selected')
         atom.commands.dispatch(suggestionList, 'core:move-down')
-        expect(editorView.querySelectorAll('.autocomplete-plus li')[3]).toHaveClass('selected')
+        expect(editorView.querySelectorAll('.autocomplete-plus-tmp li')[3]).toHaveClass('selected')
       })
     })
 
@@ -908,36 +908,36 @@ describe('Autocomplete Manager', () => {
       let [suggestionList] = []
 
       beforeEach(() => {
-        atom.config.set('autocomplete-plus.useCoreMovementCommands', false)
+        atom.config.set('autocomplete-plus-tmp.useCoreMovementCommands', false)
         triggerAutocompletion(editor, true, 'a')
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).toExist()
-          suggestionList = editorView.querySelector('.autocomplete-plus autocomplete-suggestion-list')
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
+          suggestionList = editorView.querySelector('.autocomplete-plus-tmp autocomplete-suggestion-list')
         })
       })
 
       it('responds to all the custom movement commands and to no core commands', () => {
         atom.commands.dispatch(suggestionList, 'core:move-down')
-        expect(editorView.querySelectorAll('.autocomplete-plus li')[0]).toHaveClass('selected')
+        expect(editorView.querySelectorAll('.autocomplete-plus-tmp li')[0]).toHaveClass('selected')
 
-        atom.commands.dispatch(suggestionList, 'autocomplete-plus:move-down')
-        expect(editorView.querySelectorAll('.autocomplete-plus li')[1]).toHaveClass('selected')
+        atom.commands.dispatch(suggestionList, 'autocomplete-plus-tmp:move-down')
+        expect(editorView.querySelectorAll('.autocomplete-plus-tmp li')[1]).toHaveClass('selected')
 
-        atom.commands.dispatch(suggestionList, 'autocomplete-plus:move-up')
-        expect(editorView.querySelectorAll('.autocomplete-plus li')[0]).toHaveClass('selected')
+        atom.commands.dispatch(suggestionList, 'autocomplete-plus-tmp:move-up')
+        expect(editorView.querySelectorAll('.autocomplete-plus-tmp li')[0]).toHaveClass('selected')
 
-        atom.commands.dispatch(suggestionList, 'autocomplete-plus:page-down')
-        expect(editorView.querySelectorAll('.autocomplete-plus li')[0]).not.toHaveClass('selected')
+        atom.commands.dispatch(suggestionList, 'autocomplete-plus-tmp:page-down')
+        expect(editorView.querySelectorAll('.autocomplete-plus-tmp li')[0]).not.toHaveClass('selected')
 
-        atom.commands.dispatch(suggestionList, 'autocomplete-plus:page-up')
-        expect(editorView.querySelectorAll('.autocomplete-plus li')[0]).toHaveClass('selected')
+        atom.commands.dispatch(suggestionList, 'autocomplete-plus-tmp:page-up')
+        expect(editorView.querySelectorAll('.autocomplete-plus-tmp li')[0]).toHaveClass('selected')
 
-        atom.commands.dispatch(suggestionList, 'autocomplete-plus:move-to-bottom')
-        expect(editorView.querySelectorAll('.autocomplete-plus li')[3]).toHaveClass('selected')
+        atom.commands.dispatch(suggestionList, 'autocomplete-plus-tmp:move-to-bottom')
+        expect(editorView.querySelectorAll('.autocomplete-plus-tmp li')[3]).toHaveClass('selected')
 
-        atom.commands.dispatch(suggestionList, 'autocomplete-plus:move-to-top')
-        expect(editorView.querySelectorAll('.autocomplete-plus li')[0]).toHaveClass('selected')
+        atom.commands.dispatch(suggestionList, 'autocomplete-plus-tmp:move-to-top')
+        expect(editorView.querySelectorAll('.autocomplete-plus-tmp li')[0]).toHaveClass('selected')
       })
     })
 
@@ -958,22 +958,22 @@ describe('Autocomplete Manager', () => {
           triggerAutocompletion(editor, true, 'm')
 
           runs(() => {
-            let wordElement = editorView.querySelector('.autocomplete-plus span.word')
+            let wordElement = editorView.querySelector('.autocomplete-plus-tmp span.word')
             expect(wordElement.textContent).toBe('method(something)')
             expect(wordElement.querySelector('.snippet-completion').textContent).toBe('something')
 
-            let wordElements = editorView.querySelectorAll('.autocomplete-plus span.word')
+            let wordElements = editorView.querySelectorAll('.autocomplete-plus-tmp span.word')
             expect(wordElements).toHaveLength(4)
           })
         })
 
-        it('accepts the snippet when autocomplete-plus:confirm is triggered', () => {
+        it('accepts the snippet when autocomplete-plus-tmp:confirm is triggered', () => {
           triggerAutocompletion(editor, true, 'm')
 
           runs(() => {
-            let suggestionListView = editorView.querySelector('.autocomplete-plus autocomplete-suggestion-list')
-            atom.commands.dispatch(suggestionListView, 'autocomplete-plus:confirm')
-            expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+            let suggestionListView = editorView.querySelector('.autocomplete-plus-tmp autocomplete-suggestion-list')
+            atom.commands.dispatch(suggestionListView, 'autocomplete-plus-tmp:confirm')
+            expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
             expect(editor.getSelectedText()).toBe('something')
           })
         })
@@ -983,7 +983,7 @@ describe('Autocomplete Manager', () => {
 
           runs(() => {
             // Value in list
-            let wordElements = editorView.querySelectorAll('.autocomplete-plus span.word')
+            let wordElements = editorView.querySelectorAll('.autocomplete-plus-tmp span.word')
             expect(wordElements).toHaveLength(4)
             expect(wordElements[3].textContent).toBe('namespace\\method4(something)')
 
@@ -991,9 +991,9 @@ describe('Autocomplete Manager', () => {
             atom.commands.dispatch(editorView, 'core:move-up')
 
             // Value in editor
-            let suggestionListView = editorView.querySelector('.autocomplete-plus autocomplete-suggestion-list')
-            atom.commands.dispatch(suggestionListView, 'autocomplete-plus:confirm')
-            expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+            let suggestionListView = editorView.querySelector('.autocomplete-plus-tmp autocomplete-suggestion-list')
+            atom.commands.dispatch(suggestionListView, 'autocomplete-plus-tmp:confirm')
+            expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
             expect(editor.getText()).toBe('namespace\\method4(something)')
           })
         })
@@ -1004,7 +1004,7 @@ describe('Autocomplete Manager', () => {
       it('highlights the prefix of the word in the suggestion list', () => {
         spyOn(provider, 'getSuggestions').andCallFake(({prefix}) => [{text: 'items', replacementPrefix: prefix}])
 
-        expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+        expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
 
         editor.moveToBottom()
         editor.insertText('i')
@@ -1014,9 +1014,9 @@ describe('Autocomplete Manager', () => {
         waitForAutocomplete()
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).toExist()
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
 
-          let word = editorView.querySelector('.autocomplete-plus li span.word')
+          let word = editorView.querySelector('.autocomplete-plus-tmp li span.word')
           expect(word.childNodes).toHaveLength(5)
           expect(word.childNodes[0]).toHaveClass('character-match')
           expect(word.childNodes[1].nodeType).toBe(NodeTypeText)
@@ -1029,7 +1029,7 @@ describe('Autocomplete Manager', () => {
       it('highlights repeated characters in the prefix', () => {
         spyOn(provider, 'getSuggestions').andCallFake(({prefix}) => [{text: 'apply', replacementPrefix: prefix}])
 
-        expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+        expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
 
         editor.moveToBottom()
         editor.insertText('a')
@@ -1039,9 +1039,9 @@ describe('Autocomplete Manager', () => {
         waitForAutocomplete()
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).toExist()
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
 
-          let word = editorView.querySelector('.autocomplete-plus li span.word')
+          let word = editorView.querySelector('.autocomplete-plus-tmp li span.word')
           expect(word.childNodes).toHaveLength(4)
           expect(word.childNodes[0]).toHaveClass('character-match')
           expect(word.childNodes[1]).toHaveClass('character-match')
@@ -1063,10 +1063,10 @@ describe('Autocomplete Manager', () => {
           waitForAutocomplete()
 
           runs(() => {
-            expect(editorView.querySelector('.autocomplete-plus')).toExist()
+            expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
 
-            let characterMatches = editorView.querySelectorAll('.autocomplete-plus li span.word .character-match')
-            let text = editorView.querySelector('.autocomplete-plus li span.word').textContent
+            let characterMatches = editorView.querySelectorAll('.autocomplete-plus-tmp li span.word .character-match')
+            let text = editorView.querySelector('.autocomplete-plus-tmp li span.word').textContent
             expect(characterMatches).toHaveLength(0)
             expect(text).toBe('omgnope')
           })
@@ -1083,8 +1083,8 @@ describe('Autocomplete Manager', () => {
             waitForAutocomplete()
 
             runs(() => {
-              let word = editorView.querySelector('.autocomplete-plus li span.word')
-              let charMatch = editorView.querySelector('.autocomplete-plus li span.word .character-match')
+              let word = editorView.querySelector('.autocomplete-plus-tmp li span.word')
+              let charMatch = editorView.querySelector('.autocomplete-plus-tmp li span.word .character-match')
               expect(word.textContent).toBe('ab(c)c')
               expect(charMatch.textContent).toBe('c')
               expect(charMatch.parentNode).toHaveClass('snippet-completion')
@@ -1101,10 +1101,10 @@ describe('Autocomplete Manager', () => {
             waitForAutocomplete()
 
             runs(() => {
-              let word = editorView.querySelector('.autocomplete-plus li span.word')
+              let word = editorView.querySelector('.autocomplete-plus-tmp li span.word')
               expect(word.textContent).toBe('abcde(e, f)f')
 
-              let charMatches = editorView.querySelectorAll('.autocomplete-plus li span.word .character-match')
+              let charMatches = editorView.querySelectorAll('.autocomplete-plus-tmp li span.word .character-match')
               expect(charMatches[0].textContent).toBe('c')
               expect(charMatches[0].parentNode).toHaveClass('word')
               expect(charMatches[1].textContent).toBe('e')
@@ -1128,9 +1128,9 @@ describe('Autocomplete Manager', () => {
         expect(editor.getText()).toBe('abcm')
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).toExist()
-          let suggestionListView = editorView.querySelector('.autocomplete-plus autocomplete-suggestion-list')
-          atom.commands.dispatch(suggestionListView, 'autocomplete-plus:confirm')
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
+          let suggestionListView = editorView.querySelector('.autocomplete-plus-tmp autocomplete-suggestion-list')
+          atom.commands.dispatch(suggestionListView, 'autocomplete-plus-tmp:confirm')
           expect(editor.getText()).toBe('something')
         })
       })
@@ -1143,9 +1143,9 @@ describe('Autocomplete Manager', () => {
         expect(editor.getText()).toBe('abc.')
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).toExist()
-          let suggestionListView = editorView.querySelector('.autocomplete-plus autocomplete-suggestion-list')
-          atom.commands.dispatch(suggestionListView, 'autocomplete-plus:confirm')
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
+          let suggestionListView = editorView.querySelector('.autocomplete-plus-tmp autocomplete-suggestion-list')
+          atom.commands.dispatch(suggestionListView, 'autocomplete-plus-tmp:confirm')
           expect(editor.getText()).toBe('abc.something')
         })
       })
@@ -1171,9 +1171,9 @@ describe('Autocomplete Manager', () => {
           waitForAutocomplete()
 
           runs(() => {
-            expect(editorView.querySelector('.autocomplete-plus')).toExist()
-            let suggestionListView = editorView.querySelector('.autocomplete-plus autocomplete-suggestion-list')
-            atom.commands.dispatch(suggestionListView, 'autocomplete-plus:confirm')
+            expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
+            let suggestionListView = editorView.querySelector('.autocomplete-plus-tmp autocomplete-suggestion-list')
+            atom.commands.dispatch(suggestionListView, 'autocomplete-plus-tmp:confirm')
             expect(editor.getText()).toBe('$food $food')
           })
         })
@@ -1195,8 +1195,8 @@ describe('Autocomplete Manager', () => {
         triggerAutocompletion(editor, false, 'm')
 
         runs(() => {
-          let suggestionListView = editorView.querySelector('.autocomplete-plus autocomplete-suggestion-list')
-          atom.commands.dispatch(suggestionListView, 'autocomplete-plus:confirm')
+          let suggestionListView = editorView.querySelector('.autocomplete-plus-tmp autocomplete-suggestion-list')
+          atom.commands.dispatch(suggestionListView, 'autocomplete-plus-tmp:confirm')
           expect(editor.getText()).toBe('something')
           expect(suggestion.replacementPrefix).toBe('som')
           expect(suggestion.isPrefixModified).toBe(true)
@@ -1208,8 +1208,8 @@ describe('Autocomplete Manager', () => {
         triggerAutocompletion(editor, false, 't')
 
         runs(() => {
-          let suggestionListView = editorView.querySelector('.autocomplete-plus autocomplete-suggestion-list')
-          atom.commands.dispatch(suggestionListView, 'autocomplete-plus:confirm')
+          let suggestionListView = editorView.querySelector('.autocomplete-plus-tmp autocomplete-suggestion-list')
+          atom.commands.dispatch(suggestionListView, 'autocomplete-plus-tmp:confirm')
           expect(editor.getText()).toBe('something')
           expect(suggestion.replacementPrefix).toBe('somet')
           expect(suggestion.isPrefixModified).toBe(true)
@@ -1217,8 +1217,8 @@ describe('Autocomplete Manager', () => {
       })
     })
 
-    describe("when autocomplete-plus.suggestionListFollows is 'Cursor'", () => {
-      beforeEach(() => atom.config.set('autocomplete-plus.suggestionListFollows', 'Cursor'))
+    describe("when autocomplete-plus-tmp.suggestionListFollows is 'Cursor'", () => {
+      beforeEach(() => atom.config.set('autocomplete-plus-tmp.suggestionListFollows', 'Cursor'))
 
       it('places the suggestion list at the cursor', () => {
         spyOn(provider, 'getSuggestions').andCallFake(options => [{text: 'ab', leftLabel: 'void'}, {text: 'abc', leftLabel: 'void'}])
@@ -1227,11 +1227,11 @@ describe('Autocomplete Manager', () => {
         triggerAutocompletion(editor, false, 'c')
 
         runs(() => {
-          let overlayElement = editorView.querySelector('.autocomplete-plus')
+          let overlayElement = editorView.querySelector('.autocomplete-plus-tmp')
           expect(overlayElement).toExist()
           expect(overlayElement.style.left).toBe(pixelLeftForBufferPosition([0, 10]))
 
-          let suggestionList = editorView.querySelector('.autocomplete-plus autocomplete-suggestion-list')
+          let suggestionList = editorView.querySelector('.autocomplete-plus-tmp autocomplete-suggestion-list')
           expect(suggestionList.style['margin-left']).toBeFalsy()
         })
       })
@@ -1239,7 +1239,7 @@ describe('Autocomplete Manager', () => {
       it('closes the suggestion list if the user keeps typing', () => {
         spyOn(provider, 'getSuggestions').andCallFake(({prefix}) => ['acd', 'ade'].filter((t) => t.startsWith(prefix)).map((t) => ({text: t})))
 
-        expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+        expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
 
         // Trigger an autocompletion
         editor.moveToBottom()
@@ -1247,19 +1247,19 @@ describe('Autocomplete Manager', () => {
         waitForAutocomplete()
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).toExist()
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
 
           editor.insertText('b')
           waitForAutocomplete()
         })
 
-        runs(() => expect(editorView.querySelector('.autocomplete-plus')).not.toExist())
+        runs(() => expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist())
       })
 
       it('keeps the suggestion list visible if the user keeps typing', () => {
         spyOn(provider, 'getSuggestions').andCallFake(({prefix}) => ['acd', 'ade'].filter((t) => t.startsWith(prefix)).map((t) => ({text: t})))
 
-        expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+        expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
 
         // Trigger an autocompletion
         editor.moveToBottom()
@@ -1267,25 +1267,25 @@ describe('Autocomplete Manager', () => {
         waitForAutocomplete()
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).toExist()
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
 
           editor.insertText('c')
           waitForAutocomplete()
         })
 
-        runs(() => expect(editorView.querySelector('.autocomplete-plus')).toExist())
+        runs(() => expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist())
       })
     })
 
-    describe("when autocomplete-plus.suggestionListFollows is 'Word'", () => {
-      beforeEach(() => atom.config.set('autocomplete-plus.suggestionListFollows', 'Word'))
+    describe("when autocomplete-plus-tmp.suggestionListFollows is 'Word'", () => {
+      beforeEach(() => atom.config.set('autocomplete-plus-tmp.suggestionListFollows', 'Word'))
 
       it('opens to the correct position, and correctly closes on cancel', () => {
         editor.insertText('xxxxxxxxxxx ab')
         triggerAutocompletion(editor, false, 'c')
 
         runs(() => {
-          let overlayElement = editorView.querySelector('.autocomplete-plus')
+          let overlayElement = editorView.querySelector('.autocomplete-plus-tmp')
           expect(overlayElement).toExist()
           expect(overlayElement.style.left).toBe(pixelLeftForBufferPosition([0, 12]))
         })
@@ -1298,7 +1298,7 @@ describe('Autocomplete Manager', () => {
         triggerAutocompletion(editor, false, ':')
 
         runs(() => {
-          let overlayElement = editorView.querySelector('.autocomplete-plus')
+          let overlayElement = editorView.querySelector('.autocomplete-plus-tmp')
           expect(overlayElement).toExist()
           expect(overlayElement.style.left).toBe(pixelLeftForBufferPosition([0, 14]))
         })
@@ -1311,8 +1311,8 @@ describe('Autocomplete Manager', () => {
         triggerAutocompletion(editor, false, 'c')
 
         runs(() => {
-          let suggestionList = editorView.querySelector('.autocomplete-plus autocomplete-suggestion-list')
-          let wordContainer = editorView.querySelector('.autocomplete-plus autocomplete-suggestion-list .word-container')
+          let suggestionList = editorView.querySelector('.autocomplete-plus-tmp autocomplete-suggestion-list')
+          let wordContainer = editorView.querySelector('.autocomplete-plus-tmp autocomplete-suggestion-list .word-container')
           let marginLeft = parseInt(suggestionList.style['margin-left'])
           expect(Math.abs(wordContainer.offsetLeft + marginLeft)).toBeLessThan(2)
         })
@@ -1321,13 +1321,13 @@ describe('Autocomplete Manager', () => {
       it('keeps the suggestion list planted at the beginning of the prefix when typing', () => {
         let overlayElement = null
         // Lots of x's to keep the margin offset away from the left of the window
-        // See https://github.com/atom/autocomplete-plus/issues/399
+        // See https://github.com/atom/autocomplete-plus-tmp/issues/399
         editor.insertText('xxxxxxxxxx xx')
         editor.insertText(' ')
         waitForAutocomplete()
 
         runs(() => {
-          overlayElement = editorView.querySelector('.autocomplete-plus')
+          overlayElement = editorView.querySelector('.autocomplete-plus-tmp')
           expect(overlayElement.style.left).toBe(pixelLeftForBufferPosition([0, 14]))
           editor.insertText('a')
           waitForAutocomplete()
@@ -1376,7 +1376,7 @@ describe('Autocomplete Manager', () => {
         waitForAutocomplete()
 
         runs(() => {
-          overlayElement = editorView.querySelector('.autocomplete-plus')
+          overlayElement = editorView.querySelector('.autocomplete-plus-tmp')
 
           expect(overlayElement.style.left).toBe(pixelLeftForBufferPosition([0, 12]))
 
@@ -1409,13 +1409,13 @@ describe('Autocomplete Manager', () => {
         triggerAutocompletion(editor, false, 'a')
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).toExist()
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
 
           // Accept suggestion
-          let suggestionListView = editorView.querySelector('.autocomplete-plus autocomplete-suggestion-list')
-          atom.commands.dispatch(suggestionListView, 'autocomplete-plus:confirm')
+          let suggestionListView = editorView.querySelector('.autocomplete-plus-tmp autocomplete-suggestion-list')
+          atom.commands.dispatch(suggestionListView, 'autocomplete-plus-tmp:confirm')
 
-          expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
         })
       })
 
@@ -1428,8 +1428,8 @@ describe('Autocomplete Manager', () => {
           triggerAutocompletion(editor, false, '.')
 
           runs(() => {
-            let suggestionListView = editorView.querySelector('.autocomplete-plus autocomplete-suggestion-list')
-            atom.commands.dispatch(suggestionListView, 'autocomplete-plus:confirm')
+            let suggestionListView = editorView.querySelector('.autocomplete-plus-tmp autocomplete-suggestion-list')
+            atom.commands.dispatch(suggestionListView, 'autocomplete-plus-tmp:confirm')
 
             expect(editor.getText()).toBe('ok then a.someMethod()')
           })
@@ -1437,7 +1437,7 @@ describe('Autocomplete Manager', () => {
       })
 
       describe('when the alternate keyboard integration is used', () => {
-        beforeEach(() => atom.config.set('autocomplete-plus.confirmCompletion', 'tab always, enter when suggestion explicitly selected'))
+        beforeEach(() => atom.config.set('autocomplete-plus-tmp.confirmCompletion', 'tab always, enter when suggestion explicitly selected'))
 
         it('inserts the word on tab and moves the cursor to the end of the word', () => {
           triggerAutocompletion(editor, false, 'a')
@@ -1483,7 +1483,7 @@ describe('Autocomplete Manager', () => {
       })
 
       describe('when tab is used to accept suggestions', () => {
-        beforeEach(() => atom.config.set('autocomplete-plus.confirmCompletion', 'tab'))
+        beforeEach(() => atom.config.set('autocomplete-plus-tmp.confirmCompletion', 'tab'))
 
         it('inserts the word and moves the cursor to the end of the word', () => {
           triggerAutocompletion(editor, false, 'a')
@@ -1512,7 +1512,7 @@ describe('Autocomplete Manager', () => {
       })
 
       describe('when enter is used to accept suggestions', () => {
-        beforeEach(() => atom.config.set('autocomplete-plus.confirmCompletion', 'enter'))
+        beforeEach(() => atom.config.set('autocomplete-plus-tmp.confirmCompletion', 'enter'))
 
         it('inserts the word and moves the cursor to the end of the word', () => {
           triggerAutocompletion(editor, false, 'a')
@@ -1551,8 +1551,8 @@ describe('Autocomplete Manager', () => {
           triggerAutocompletion(editor, false, 'e')
 
           runs(() => {
-            let suggestionListView = editorView.querySelector('.autocomplete-plus autocomplete-suggestion-list')
-            atom.commands.dispatch(suggestionListView, 'autocomplete-plus:confirm')
+            let suggestionListView = editorView.querySelector('.autocomplete-plus-tmp autocomplete-suggestion-list')
+            atom.commands.dispatch(suggestionListView, 'autocomplete-plus-tmp:confirm')
 
             expect(editor.getText()).toBe('oneomgtwothree')
           })
@@ -1563,15 +1563,15 @@ describe('Autocomplete Manager', () => {
             {text: 'oneomgtwo', replacementPrefix: 'one'}
           ])
 
-          atom.config.set('autocomplete-plus.consumeSuffix', false)
+          atom.config.set('autocomplete-plus-tmp.consumeSuffix', false)
 
           editor.setText('ontwothree')
           editor.setCursorBufferPosition([0, 2])
           triggerAutocompletion(editor, false, 'e')
 
           runs(() => {
-            let suggestionListView = editorView.querySelector('.autocomplete-plus autocomplete-suggestion-list')
-            atom.commands.dispatch(suggestionListView, 'autocomplete-plus:confirm')
+            let suggestionListView = editorView.querySelector('.autocomplete-plus-tmp autocomplete-suggestion-list')
+            atom.commands.dispatch(suggestionListView, 'autocomplete-plus-tmp:confirm')
 
             expect(editor.getText()).toBe('oneomgtwotwothree')
           })
@@ -1587,8 +1587,8 @@ describe('Autocomplete Manager', () => {
           triggerAutocompletion(editor, false, 'e')
 
           runs(() => {
-            let suggestionListView = editorView.querySelector('.autocomplete-plus autocomplete-suggestion-list')
-            atom.commands.dispatch(suggestionListView, 'autocomplete-plus:confirm')
+            let suggestionListView = editorView.querySelector('.autocomplete-plus-tmp autocomplete-suggestion-list')
+            atom.commands.dispatch(suggestionListView, 'autocomplete-plus-tmp:confirm')
 
             expect(editor.getText()).toBe('(oneomgtwo())three')
           })
@@ -1605,8 +1605,8 @@ describe('Autocomplete Manager', () => {
           triggerAutocompletion(editor, false, 'e')
 
           runs(() => {
-            let suggestionListView = editorView.querySelector('.autocomplete-plus autocomplete-suggestion-list')
-            atom.commands.dispatch(suggestionListView, 'autocomplete-plus:confirm')
+            let suggestionListView = editorView.querySelector('.autocomplete-plus-tmp autocomplete-suggestion-list')
+            atom.commands.dispatch(suggestionListView, 'autocomplete-plus-tmp:confirm')
 
             expect(editor.getText()).toBe('oneomgTwotwothree')
           })
@@ -1617,43 +1617,43 @@ describe('Autocomplete Manager', () => {
     describe('when auto-activation is disabled', () => {
       let [options] = []
 
-      beforeEach(() => atom.config.set('autocomplete-plus.enableAutoActivation', false))
+      beforeEach(() => atom.config.set('autocomplete-plus-tmp.enableAutoActivation', false))
 
       it('does not show suggestions after a delay', () => {
         triggerAutocompletion(editor)
 
-        runs(() => expect(editorView.querySelector('.autocomplete-plus')).not.toExist())
+        runs(() => expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist())
       })
 
       it('shows suggestions when explicitly triggered', () => {
         triggerAutocompletion(editor)
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
-          atom.commands.dispatch(editorView, 'autocomplete-plus:activate')
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
+          atom.commands.dispatch(editorView, 'autocomplete-plus-tmp:activate')
           waitForAutocomplete()
         })
 
-        runs(() => expect(editorView.querySelector('.autocomplete-plus')).toExist())
+        runs(() => expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist())
       })
 
       it('stays open when typing', () => {
         triggerAutocompletion(editor, false, 'a')
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
-          atom.commands.dispatch(editorView, 'autocomplete-plus:activate')
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
+          atom.commands.dispatch(editorView, 'autocomplete-plus-tmp:activate')
           waitForAutocomplete()
         })
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).toExist()
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
 
           editor.insertText('b')
           waitForAutocomplete()
         })
 
-        runs(() => expect(editorView.querySelector('.autocomplete-plus')).toExist())
+        runs(() => expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist())
       })
 
       it('accepts the suggestion if there is one', () => {
@@ -1662,13 +1662,13 @@ describe('Autocomplete Manager', () => {
         triggerAutocompletion(editor)
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
-          atom.commands.dispatch(editorView, 'autocomplete-plus:activate')
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
+          atom.commands.dispatch(editorView, 'autocomplete-plus-tmp:activate')
           waitForAutocomplete()
         })
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
           expect(editor.getText()).toBe('omgok')
         })
       })
@@ -1679,12 +1679,12 @@ describe('Autocomplete Manager', () => {
         triggerAutocompletion(editor)
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
-          atom.commands.dispatch(editorView, 'autocomplete-plus:activate', {activatedManually: false})
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
+          atom.commands.dispatch(editorView, 'autocomplete-plus-tmp:activate', {activatedManually: false})
           waitForAutocomplete()
         })
 
-        runs(() => expect(editorView.querySelector('.autocomplete-plus')).toExist())
+        runs(() => expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist())
       })
 
       it('does not accept the suggestion if auto-confirm single suggestion is disabled', () => {
@@ -1693,13 +1693,13 @@ describe('Autocomplete Manager', () => {
         triggerAutocompletion(editor)
 
         runs(() => {
-          atom.config.set('autocomplete-plus.enableAutoConfirmSingleSuggestion', false)
-          expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
-          atom.commands.dispatch(editorView, 'autocomplete-plus:activate')
+          atom.config.set('autocomplete-plus-tmp.enableAutoConfirmSingleSuggestion', false)
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
+          atom.commands.dispatch(editorView, 'autocomplete-plus-tmp:activate')
           waitForAutocomplete()
         })
 
-        runs(() => expect(editorView.querySelector('.autocomplete-plus')).toExist())
+        runs(() => expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist())
       })
 
       it('includes the correct value for activatedManually when explicitly triggered', () => {
@@ -1711,13 +1711,13 @@ describe('Autocomplete Manager', () => {
         triggerAutocompletion(editor)
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
-          atom.commands.dispatch(editorView, 'autocomplete-plus:activate')
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
+          atom.commands.dispatch(editorView, 'autocomplete-plus-tmp:activate')
           waitForAutocomplete()
         })
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).toExist()
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
           expect(options).toBeDefined()
           expect(options.activatedManually).toBe(true)
         })
@@ -1732,20 +1732,20 @@ describe('Autocomplete Manager', () => {
         })
 
         editor.insertText('a')
-        atom.commands.dispatch(editorView, 'autocomplete-plus:activate')
+        atom.commands.dispatch(editorView, 'autocomplete-plus-tmp:activate')
         waitForAutocomplete()
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).toExist()
-          expect(editorView.querySelectorAll('.autocomplete-plus li')).toHaveLength(2)
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
+          expect(editorView.querySelectorAll('.autocomplete-plus-tmp li')).toHaveLength(2)
 
           editor.insertText('b')
           waitForAutocomplete()
         })
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).toExist()
-          expect(editorView.querySelectorAll('.autocomplete-plus li')).toHaveLength(1)
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
+          expect(editorView.querySelectorAll('.autocomplete-plus-tmp li')).toHaveLength(1)
         })
       })
     })
@@ -1765,9 +1765,9 @@ def`
           triggerAutocompletion(editor, false, 'm')
 
           runs(() => {
-            expect(editorView.querySelector('.autocomplete-plus')).toExist()
-            let suggestionListView = editorView.querySelector('.autocomplete-plus autocomplete-suggestion-list')
-            atom.commands.dispatch(suggestionListView, 'autocomplete-plus:confirm')
+            expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
+            let suggestionListView = editorView.querySelector('.autocomplete-plus-tmp autocomplete-suggestion-list')
+            atom.commands.dispatch(suggestionListView, 'autocomplete-plus-tmp:confirm')
             expect(editor.getText()).toBe(`asomething asomething
 defm`
             )
@@ -1791,9 +1791,9 @@ def`
           triggerAutocompletion(editor, false, 'm')
 
           runs(() => {
-            expect(editorView.querySelector('.autocomplete-plus')).toExist()
-            let suggestionListView = editorView.querySelector('.autocomplete-plus autocomplete-suggestion-list')
-            atom.commands.dispatch(suggestionListView, 'autocomplete-plus:confirm')
+            expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
+            let suggestionListView = editorView.querySelector('.autocomplete-plus-tmp autocomplete-suggestion-list')
+            atom.commands.dispatch(suggestionListView, 'autocomplete-plus-tmp:confirm')
             expect(editor.getText()).toBe(`aok(omg) aok(omg)
 defm`
             )
@@ -1809,7 +1809,7 @@ defm`
         triggerAutocompletion(editor, false, 'a')
 
         runs(() => {
-          let items = editorView.querySelectorAll('.autocomplete-plus li')
+          let items = editorView.querySelectorAll('.autocomplete-plus-tmp li')
           expect(items[0]).toHaveClass('selected')
           expect(items[1]).not.toHaveClass('selected')
           expect(items[2]).not.toHaveClass('selected')
@@ -1817,7 +1817,7 @@ defm`
           // Select previous item
           atom.commands.dispatch(editorView, 'core:move-up')
 
-          items = editorView.querySelectorAll('.autocomplete-plus li')
+          items = editorView.querySelectorAll('.autocomplete-plus-tmp li')
           expect(items[0]).not.toHaveClass('selected')
           expect(items[1]).not.toHaveClass('selected')
           expect(items[2]).toHaveClass('selected')
@@ -1838,7 +1838,7 @@ defm`
           atom.commands.dispatch(editorView, 'core:move-up')
           advanceClock(1)
 
-          let autocomplete = editorView.querySelector('.autocomplete-plus')
+          let autocomplete = editorView.querySelector('.autocomplete-plus-tmp')
           expect(autocomplete).toExist()
 
           editor.insertText('a')
@@ -1846,14 +1846,14 @@ defm`
         })
 
         runs(() => {
-          let autocomplete = editorView.querySelector('.autocomplete-plus')
+          let autocomplete = editorView.querySelector('.autocomplete-plus-tmp')
           expect(autocomplete).toExist()
 
           // one item displayed, should close
           atom.commands.dispatch(editorView, 'core:move-up')
           advanceClock(1)
 
-          autocomplete = editorView.querySelector('.autocomplete-plus')
+          autocomplete = editorView.querySelector('.autocomplete-plus-tmp')
           expect(autocomplete).not.toExist()
         })
       })
@@ -1874,13 +1874,13 @@ defm`
         })
 
         runs(() => {
-          let autocomplete = editorView.querySelector('.autocomplete-plus')
+          let autocomplete = editorView.querySelector('.autocomplete-plus-tmp')
           expect(autocomplete).toExist()
 
           atom.commands.dispatch(editorView, 'core:move-up')
           advanceClock(1)
 
-          autocomplete = editorView.querySelector('.autocomplete-plus')
+          autocomplete = editorView.querySelector('.autocomplete-plus-tmp')
           expect(autocomplete).toExist()
         })
       })
@@ -1891,7 +1891,7 @@ defm`
         triggerAutocompletion(editor, false, 'a')
 
         runs(() => {
-          let items = editorView.querySelectorAll('.autocomplete-plus li')
+          let items = editorView.querySelectorAll('.autocomplete-plus-tmp li')
           expect(items[0]).toHaveClass('selected')
           expect(items[1]).not.toHaveClass('selected')
           expect(items[2]).not.toHaveClass('selected')
@@ -1899,7 +1899,7 @@ defm`
           // Select next item
           atom.commands.dispatch(editorView, 'core:move-down')
 
-          items = editorView.querySelectorAll('.autocomplete-plus li')
+          items = editorView.querySelectorAll('.autocomplete-plus-tmp li')
           expect(items[0]).not.toHaveClass('selected')
           expect(items[1]).toHaveClass('selected')
           expect(items[2]).not.toHaveClass('selected')
@@ -1912,13 +1912,13 @@ defm`
         triggerAutocompletion(editor, false, 'a')
 
         runs(() => {
-          let items = editorView.querySelectorAll('.autocomplete-plus li')
+          let items = editorView.querySelectorAll('.autocomplete-plus-tmp li')
           expect(items[0]).toHaveClass('selected')
           expect(items[1]).not.toHaveClass('selected')
           expect(items[2]).not.toHaveClass('selected')
 
-          let suggestionListView = editorView.querySelector('.autocomplete-plus autocomplete-suggestion-list')
-          items = editorView.querySelectorAll('.autocomplete-plus li')
+          let suggestionListView = editorView.querySelector('.autocomplete-plus-tmp autocomplete-suggestion-list')
+          items = editorView.querySelectorAll('.autocomplete-plus-tmp li')
 
           atom.commands.dispatch(suggestionListView, 'core:move-down')
           expect(items[1]).toHaveClass('selected')
@@ -1940,9 +1940,9 @@ defm`
         it('displays the text in the suggestion', () => {
           triggerAutocompletion(editor)
           runs(() => {
-            let iconContainer = editorView.querySelector('.autocomplete-plus li .icon-container')
-            let leftLabel = editorView.querySelector('.autocomplete-plus li .right-label')
-            let rightLabel = editorView.querySelector('.autocomplete-plus li .right-label')
+            let iconContainer = editorView.querySelector('.autocomplete-plus-tmp li .icon-container')
+            let leftLabel = editorView.querySelector('.autocomplete-plus-tmp li .right-label')
+            let rightLabel = editorView.querySelector('.autocomplete-plus-tmp li .right-label')
 
             expect(iconContainer.childNodes).toHaveLength(0)
             expect(leftLabel.childNodes).toHaveLength(0)
@@ -1958,7 +1958,7 @@ defm`
         it('displays an icon in the icon-container', () => {
           triggerAutocompletion(editor)
           runs(() => {
-            let icon = editorView.querySelector('.autocomplete-plus li .icon-container .icon')
+            let icon = editorView.querySelector('.autocomplete-plus-tmp li .icon-container .icon')
             expect(icon.textContent).toBe('o')
           })
         })
@@ -1971,7 +1971,7 @@ defm`
         it('displays the default icon in the icon-container', () => {
           triggerAutocompletion(editor)
           runs(() => {
-            let icon = editorView.querySelector('.autocomplete-plus li .icon-container .icon i')
+            let icon = editorView.querySelector('.autocomplete-plus-tmp li .icon-container .icon i')
             expect(icon).toHaveClass('icon-move-right')
           })
         })
@@ -1984,7 +1984,7 @@ defm`
         it('does not display an icon in the icon-container', () => {
           triggerAutocompletion(editor)
           runs(() => {
-            let iconContainer = editorView.querySelector('.autocomplete-plus li .icon-container')
+            let iconContainer = editorView.querySelector('.autocomplete-plus-tmp li .icon-container')
             expect(iconContainer.childNodes).toHaveLength(0)
           })
         })
@@ -1997,7 +1997,7 @@ defm`
         it('displays an icon in the icon-container', () => {
           triggerAutocompletion(editor)
           runs(() => {
-            let icon = editorView.querySelector('.autocomplete-plus li .icon-container .icon .omg')
+            let icon = editorView.querySelector('.autocomplete-plus-tmp li .icon-container .icon .omg')
             expect(icon).toExist()
           })
         })
@@ -2010,7 +2010,7 @@ defm`
         it('does not display an icon in the icon-container', () => {
           triggerAutocompletion(editor)
           runs(() => {
-            let iconContainer = editorView.querySelector('.autocomplete-plus li .icon-container')
+            let iconContainer = editorView.querySelector('.autocomplete-plus-tmp li .icon-container')
             expect(iconContainer.childNodes).toHaveLength(0)
           })
         })
@@ -2023,7 +2023,7 @@ defm`
         it('displays the default icon in the icon-container', () => {
           triggerAutocompletion(editor)
           runs(() => {
-            let icon = editorView.querySelector('.autocomplete-plus li .icon-container .icon')
+            let icon = editorView.querySelector('.autocomplete-plus-tmp li .icon-container .icon')
             expect(icon.textContent).toBe('s')
           })
         })
@@ -2036,7 +2036,7 @@ defm`
         it('it does not display an icon', () => {
           triggerAutocompletion(editor)
           runs(() => {
-            let iconContainer = editorView.querySelector('.autocomplete-plus li .icon-container')
+            let iconContainer = editorView.querySelector('.autocomplete-plus-tmp li .icon-container')
             expect(iconContainer.childNodes).toHaveLength(0)
           })
         })
@@ -2049,7 +2049,7 @@ defm`
         it('displays the text in the suggestion', () => {
           triggerAutocompletion(editor)
           runs(() => {
-            let label = editorView.querySelector('.autocomplete-plus li .right-label')
+            let label = editorView.querySelector('.autocomplete-plus-tmp li .right-label')
             expect(label).toHaveText('<i class="something">sometext</i>')
           })
         })
@@ -2062,7 +2062,7 @@ defm`
         it('displays the text in the suggestion', () => {
           triggerAutocompletion(editor)
           runs(() => {
-            let label = editorView.querySelector('.autocomplete-plus li .right-label .something')
+            let label = editorView.querySelector('.autocomplete-plus-tmp li .right-label .something')
             expect(label).toHaveText('sometext')
           })
         })
@@ -2075,7 +2075,7 @@ defm`
         it('displays the text in the suggestion', () => {
           triggerAutocompletion(editor)
           runs(() => {
-            let label = editorView.querySelector('.autocomplete-plus li .left-label')
+            let label = editorView.querySelector('.autocomplete-plus-tmp li .left-label')
             expect(label).toHaveText('<i class="something">sometext</i>')
           })
         })
@@ -2088,7 +2088,7 @@ defm`
         it('displays the text in the suggestion', () => {
           triggerAutocompletion(editor)
           runs(() => {
-            let label = editorView.querySelector('.autocomplete-plus li .left-label .something')
+            let label = editorView.querySelector('.autocomplete-plus-tmp li .left-label .something')
             expect(label).toHaveText('sometext')
           })
         })
@@ -2108,7 +2108,7 @@ defm`
 
         runs(() => {
           // Get the second item
-          let item = editorView.querySelectorAll('.autocomplete-plus li')[1]
+          let item = editorView.querySelectorAll('.autocomplete-plus-tmp li')[1]
 
           // Click the item, expect list to be hidden and text to be added
           let mouse = document.createEvent('MouseEvents')
@@ -2118,7 +2118,7 @@ defm`
           mouse.initMouseEvent('mouseup', true, true, window)
           item.dispatchEvent(mouse)
 
-          expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
           expect(editor.getBuffer().getLastLine()).toEqual(item.textContent.trim())
         })
       })
@@ -2127,7 +2127,7 @@ defm`
         triggerAutocompletion(editor, true, 'a')
 
         runs(() => {
-          let description = editorView.querySelector('.autocomplete-plus .suggestion-description-content')
+          let description = editorView.querySelector('.autocomplete-plus-tmp .suggestion-description-content')
 
           // Click the description, expect list to still show
           let mouse = document.createEvent('MouseEvents')
@@ -2137,7 +2137,7 @@ defm`
           mouse.initMouseEvent('mouseup', true, true, window)
           description.dispatchEvent(mouse)
 
-          expect(editorView.querySelector('.autocomplete-plus')).toExist()
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
         })
       })
     })
@@ -2151,8 +2151,8 @@ defm`
         triggerAutocompletion(editor, true, 'a')
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).toExist()
-          atom.commands.dispatch(editorView, 'autocomplete-plus:navigate-to-description-more-link')
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
+          atom.commands.dispatch(editorView, 'autocomplete-plus-tmp:navigate-to-description-more-link')
           expect(shell.openExternal).toHaveBeenCalled()
         })
       })
@@ -2164,8 +2164,8 @@ defm`
         triggerAutocompletion(editor, true, 'a')
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).toExist()
-          atom.commands.dispatch(editorView, 'autocomplete-plus:navigate-to-description-more-link')
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
+          atom.commands.dispatch(editorView, 'autocomplete-plus-tmp:navigate-to-description-more-link')
           expect(shell.openExternal).not.toHaveBeenCalled()
         })
       })
@@ -2184,7 +2184,7 @@ defm`
       waitsForPromise(() => atom.packages.activatePackage('language-text'))
 
       // Activate the package
-      waitsForPromise(() => atom.packages.activatePackage('autocomplete-plus').then((a) => {
+      waitsForPromise(() => atom.packages.activatePackage('autocomplete-plus-tmp').then((a) => {
         mainModule = a.mainModule
       }))
 
@@ -2203,7 +2203,7 @@ defm`
     })
 
     describe('when strict matching is used', () => {
-      beforeEach(() => atom.config.set('autocomplete-plus.strictMatching', true))
+      beforeEach(() => atom.config.set('autocomplete-plus-tmp.strictMatching', true))
 
       it('using strict matching does not cause issues when typing', () => {
         // FIXME: WTF does this test even test?
@@ -2224,7 +2224,7 @@ defm`
 
   describe('when opening a javascript file', () => {
     beforeEach(() => {
-      runs(() => atom.config.set('autocomplete-plus.enableAutoActivation', true))
+      runs(() => atom.config.set('autocomplete-plus-tmp.enableAutoActivation', true))
 
       waitsForPromise(() => atom.workspace.open('sample.js').then((e) => {
         editor = e
@@ -2234,7 +2234,7 @@ defm`
       waitsForPromise(() => atom.packages.activatePackage('language-javascript'))
 
       // Activate the package
-      waitsForPromise(() => atom.packages.activatePackage('autocomplete-plus').then((a) => {
+      waitsForPromise(() => atom.packages.activatePackage('autocomplete-plus-tmp').then((a) => {
         mainModule = a.mainModule
       }))
 
@@ -2248,25 +2248,25 @@ defm`
 
     describe('when the built-in provider is disabled', () =>
       it('should not show the suggestion list', () => {
-        atom.config.set('autocomplete-plus.enableBuiltinProvider', false)
-        expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+        atom.config.set('autocomplete-plus-tmp.enableBuiltinProvider', false)
+        expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
         triggerAutocompletion(editor)
 
-        runs(() => expect(editorView.querySelector('.autocomplete-plus')).not.toExist())
+        runs(() => expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist())
       })
     )
 
     describe('when the buffer changes', () => {
       it('should show the suggestion list when suggestions are found', () => {
-        expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+        expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
         triggerAutocompletion(editor)
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).toExist()
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
 
           // Check suggestions
           let suggestions = ['function', 'if', 'left', 'shift']
-          let s = editorView.querySelectorAll('.autocomplete-plus li span.word')
+          let s = editorView.querySelectorAll('.autocomplete-plus-tmp li span.word')
           for (let i = 0; i < s.length; i++) {
             let item = s[i]
             expect(item.innerText).toEqual(suggestions[i])
@@ -2275,20 +2275,20 @@ defm`
       })
 
       it('should not show the suggestion list when no suggestions are found', () => {
-        expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+        expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
 
         editor.moveToBottom()
         editor.insertText('x')
 
         waitForAutocomplete()
 
-        runs(() => expect(editorView.querySelector('.autocomplete-plus')).not.toExist())
+        runs(() => expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist())
       })
 
       it('shows the suggestion list on backspace if allowed', () => {
         runs(() => {
-          atom.config.set('autocomplete-plus.backspaceTriggersAutocomplete', true)
-          expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+          atom.config.set('autocomplete-plus-tmp.backspaceTriggersAutocomplete', true)
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
 
           editor.moveToBottom()
           editor.insertText('f')
@@ -2298,13 +2298,13 @@ defm`
         })
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).toExist()
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
           editor.insertText('\r')
           waitForAutocomplete()
         })
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
           let key = atom.keymaps.constructor.buildKeydownEvent('backspace', {target: document.activeElement})
           atom.keymaps.handleKeyboardEvent(key)
 
@@ -2312,7 +2312,7 @@ defm`
         })
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
           let key = atom.keymaps.constructor.buildKeydownEvent('backspace', {target: document.activeElement})
           atom.keymaps.handleKeyboardEvent(key)
 
@@ -2320,15 +2320,15 @@ defm`
         })
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).toExist()
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
           expect(editor.lineTextForBufferRow(13)).toBe('f')
         })
       })
 
       it('does not shows the suggestion list on backspace if disallowed', () => {
         runs(() => {
-          atom.config.set('autocomplete-plus.backspaceTriggersAutocomplete', false)
-          expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+          atom.config.set('autocomplete-plus-tmp.backspaceTriggersAutocomplete', false)
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
 
           editor.moveToBottom()
           editor.insertText('f')
@@ -2338,13 +2338,13 @@ defm`
         })
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).toExist()
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
           editor.insertText('\r')
           waitForAutocomplete()
         })
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
           let key = atom.keymaps.constructor.buildKeydownEvent('backspace', {target: document.activeElement})
           atom.keymaps.handleKeyboardEvent(key)
 
@@ -2352,7 +2352,7 @@ defm`
         })
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
           let key = atom.keymaps.constructor.buildKeydownEvent('backspace', {target: document.activeElement})
           atom.keymaps.handleKeyboardEvent(key)
 
@@ -2360,13 +2360,13 @@ defm`
         })
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
           expect(editor.lineTextForBufferRow(13)).toBe('f')
         })
       })
 
       it("keeps the suggestion list open when it's already open on backspace", () => {
-        expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+        expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
 
         editor.moveToBottom()
         editor.insertText('f')
@@ -2375,7 +2375,7 @@ defm`
         waitForAutocomplete()
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).toExist()
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
 
           let key = atom.keymaps.constructor.buildKeydownEvent('backspace', {target: document.activeElement})
           atom.keymaps.handleKeyboardEvent(key)
@@ -2384,14 +2384,14 @@ defm`
         })
 
         runs(() => {
-          expect(editorView.querySelector('.autocomplete-plus')).toExist()
+          expect(editorView.querySelector('.autocomplete-plus-tmp')).toExist()
           expect(editor.lineTextForBufferRow(13)).toBe('f')
         })
       })
 
       it("does not open the suggestion on backspace when it's closed", () => {
-        atom.config.set('autocomplete-plus.backspaceTriggersAutocomplete', false)
-        expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+        atom.config.set('autocomplete-plus-tmp.backspaceTriggersAutocomplete', false)
+        expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
 
         editor.setCursorBufferPosition([2, 39]) // at the end of `items`
 
@@ -2402,7 +2402,7 @@ defm`
           waitForAutocomplete()
         })
 
-        runs(() => expect(editorView.querySelector('.autocomplete-plus')).not.toExist())
+        runs(() => expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist())
       })
 
       it('does not update the suggestion list while composition is in progress', () => {
@@ -2456,7 +2456,7 @@ defm`
           waitForAutocomplete()
         })
 
-        runs(() => expect(editorView.querySelector('.autocomplete-plus')).not.toExist())
+        runs(() => expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist())
       })
     })
 
@@ -2477,12 +2477,12 @@ defm`
 
   describe('when a long completion exists', () => {
     beforeEach(() => {
-      runs(() => atom.config.set('autocomplete-plus.enableAutoActivation', true))
+      runs(() => atom.config.set('autocomplete-plus-tmp.enableAutoActivation', true))
 
       waitsForPromise(() => atom.workspace.open('samplelong.js').then((e) => { editor = e }))
 
       // Activate the package
-      waitsForPromise(() => atom.packages.activatePackage('autocomplete-plus').then((a) => {
+      waitsForPromise(() => atom.packages.activatePackage('autocomplete-plus-tmp').then((a) => {
         mainModule = a.mainModule
       }))
 
@@ -2510,7 +2510,7 @@ defm`
     let [bottomEditor, bottomEditorView, autocompleteDisposable] = []
     beforeEach(() => {
       // Activate package.
-      waitsForPromise(() => atom.packages.activatePackage('autocomplete-plus').then((a) => {
+      waitsForPromise(() => atom.packages.activatePackage('autocomplete-plus-tmp').then((a) => {
         mainModule = a.mainModule
       }))
 
@@ -2562,9 +2562,9 @@ defm`
       })
 
       runs(() => {
-        expect(editorView.querySelector('.autocomplete-plus')).not.toExist()
+        expect(editorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
 
-        let items = bottomEditorView.querySelectorAll('.autocomplete-plus li')
+        let items = bottomEditorView.querySelectorAll('.autocomplete-plus-tmp li')
         expect(items.length).toEqual(1)
         expect(items[0].innerText.trim()).toEqual('bottom')
       })
@@ -2575,9 +2575,9 @@ defm`
       })
 
       runs(() => {
-        expect(bottomEditorView.querySelector('.autocomplete-plus')).not.toExist()
+        expect(bottomEditorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
 
-        let items = editorView.querySelectorAll('.autocomplete-plus li')
+        let items = editorView.querySelectorAll('.autocomplete-plus-tmp li')
         expect(items.length).toEqual(1)
         expect(items[0].innerText.trim()).toEqual('center')
       })
@@ -2589,7 +2589,7 @@ defm`
       triggerAutocompletion(bottomEditor)
 
       runs(() => {
-        expect(bottomEditorView.querySelector('.autocomplete-plus')).not.toExist()
+        expect(bottomEditorView.querySelector('.autocomplete-plus-tmp')).not.toExist()
       })
     })
   })
